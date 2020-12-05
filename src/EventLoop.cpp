@@ -31,26 +31,26 @@ void EventLoop::EventProcess()
 
             if (_fired_evs[i].events & EPOLLIN) {
                 //读事件， 调用读回调函数
-                void *args = ev->rcb_args;
+                void *args = ev->readArgs_;
                 //调用读业务
                 ev->readCallback(this, _fired_evs[i].data.fd, args);
             }
             else if (_fired_evs[i].events & EPOLLOUT) {
                 //写事件, 调用写回调函数
-                void *args = ev->wcb_args;
+                void *args = ev->writeArgs_;
                 ev->writeCallback(this, _fired_evs[i].data.fd, args);
             }
             else if (_fired_evs[i].events & (EPOLLHUP|EPOLLERR)) {
                 //水平触发未处理， 可能会出现HUP事件，需要正常处理读写， 如果当前时间events 既没有写，也没有读 将events从epoll中删除
                 if (ev->readCallback != NULL) {
                     //读事件， 调用读回调函数
-                    void *args = ev->rcb_args;
+                    void *args = ev->readArgs_;
                     //调用读业务
                     ev->readCallback(this, _fired_evs[i].data.fd, args);
                 }
                 else if (ev->writeCallback != NULL) {
                     //写事件, 调用写回调函数
-                    void *args = ev->wcb_args;
+                    void *args = ev->writeArgs_;
                     ev->writeCallback(this, _fired_evs[i].data.fd, args);
                 }
                 else  {
@@ -90,12 +90,12 @@ void EventLoop::AddIoEvent(int fd, IOCallback *proc, int mask, void *args)
     if (mask & EPOLLIN) {
         //该事件是一个读事件
         _io_evs[fd].readCallback = proc; //注册读回调业务
-        _io_evs[fd].rcb_args = args;
+        _io_evs[fd].readArgs_ = args;
     }
     else if (mask & EPOLLOUT) {
         //该事件是一个写事件
         _io_evs[fd].writeCallback = proc; //注册写回调业务
-        _io_evs[fd].wcb_args = args;
+        _io_evs[fd].writeArgs_ = args;
     }
 
     //****

@@ -29,9 +29,9 @@ private:
 
 public:
     static TcpConn*  *conns; //全部已经在线的连接 
-    static void increase_conn(int connfd, TcpConn *conn); //新增一个链接
-    static void decrease_conn(int connfd); //减少一个链接
-    static void get_conn_num(int *curr_conn); //得到当前的连接刻度
+    static void increaseConn(int connfd, TcpConn *conn); //新增一个链接
+    static void decreaseConn(int connfd); //减少一个链接
+    static void getConnNumber(int *curr_conn); //得到当前的连接刻度
 
     static pthread_mutex_t _conns_mutex;//保护conns添加删除的互斥锁
 #define MAX_CONNS 3 //从配置文件中读的 TODO

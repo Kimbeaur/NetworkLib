@@ -8,13 +8,13 @@
 #include <unistd.h>
 
 
-void conn_rd_callback(EventLoop *loop, int fd, void *args)
+void connReadCallback(EventLoop *loop, int fd, void *args)
 {
     TcpConn *conn = (TcpConn*)args;
     conn->doRead();
 }
 
-void conn_wt_callback(EventLoop *loop, int fd, void *args)
+void connWriteCallback(EventLoop *loop, int fd, void *args)
 {
     TcpConn *conn = (TcpConn*)args;
     conn->doWrite();
@@ -43,10 +43,10 @@ TcpConn::TcpConn(int connfd, EventLoop *loop)
 
 
     //将 当前TcpConn的读事件 加入到loop中进行监听
-    _loop->AddIoEvent(_connfd, conn_rd_callback,  EPOLLIN, this);
+    _loop->AddIoEvent(_connfd, connReadCallback,  EPOLLIN, this);
 
     //将自己添加到 TcpServer中的conns集合中
-    TcpServer::increase_conn(_connfd, this);
+    TcpServer::increaseConn(_connfd, this);
 }
 
 
@@ -150,14 +150,14 @@ int TcpConn::SendMessage(const char *data, int msglen, int msgid)
     head.msglen = msglen;
 
     //将消息头 写到Obuf中
-    int ret = obuf.send_data((const char*)&head, MESSAGE_HEAD_LEN);
+    int ret = obuf.sendData((const char*)&head, MESSAGE_HEAD_LEN);
     if (ret != 0) {
         fprintf(stderr, "send head error\n");
         return -1;
     }
     
     // 2 写消息体
-    ret = obuf.send_data(data, msglen);
+    ret = obuf.sendData(data, msglen);
     if (ret != 0) {
         fprintf(stderr, "send data error\n");
         //如果消息体写失败，消息头需要弹出重置
@@ -167,7 +167,7 @@ int TcpConn::SendMessage(const char *data, int msglen, int msgid)
     
     // 3 将_connfd 添加一个写事件EPOLLOUT 回掉，让回掉直接将obuf中的数据写回给对端客户端
     if (active_epollout == true) {
-        _loop->AddIoEvent(_connfd, conn_wt_callback, EPOLLOUT, this);
+        _loop->AddIoEvent(_connfd, connWriteCallback, EPOLLOUT, this);
     }
 
     return 0;
@@ -182,7 +182,7 @@ void TcpConn::cleanConn()
     }
 
     //将TcpServer中 把当前连接摘除
-    TcpServer::decrease_conn(_connfd);
+    TcpServer::decreaseConn(_connfd);
 
     //链接的清理工作
     _loop->DeleteIoEvent(_connfd);

@@ -36,9 +36,3 @@ public:
     //存在多个IOBuffer 采用链表的形式进行管理
     IOBuffer *next;
 };
-
-//取数据  IOBuffer.data+head,  lenght 
-//IOBuffer.data, 3.
-//IOBuffer.pop(3)
-//IOBuffer.adjust();
-

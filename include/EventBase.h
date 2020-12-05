@@ -20,8 +20,8 @@ struct IOEvent {
         mask = 0;
         writeCallback = NULL;
         readCallback = NULL;
-        rcb_args = NULL;
-        wcb_args = NULL;
+        readArgs_ = NULL;
+        writeArgs_ = NULL;
     }
 
     //事件的读写属性
@@ -34,8 +34,8 @@ struct IOEvent {
     IOCallback *writeCallback;
     
     //读事件回调函数的形参
-    void *rcb_args;
+    void *readArgs_;
     
     //写事件回调函数的形参
-    void *wcb_args;
+    void *writeArgs_;
 };

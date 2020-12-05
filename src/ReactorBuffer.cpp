@@ -135,7 +135,7 @@ void InputBuf::adjust()
 
 // =========================================== 
     //将一段数据 写到 自身的_buf中
-int OutputBuf::send_data(const char *data, int datalen)
+int OutputBuf::sendData(const char *data, int datalen)
 {
     if (_buf == NULL) {
         //如果当前的OutputBuf里的_buf是空，需要从BufferPool拿一个新的

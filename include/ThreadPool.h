@@ -12,7 +12,7 @@ public:
     ThreadPool(int thread_cnt);
 
     //提供一个获取一个ThreadQueue方法
-    ThreadQueue<TaskMsg> * get_thread();
+    ThreadQueue<TaskMsg> * getThread();
 
 
     //发送一个task NEW_TASK类型的任务接口

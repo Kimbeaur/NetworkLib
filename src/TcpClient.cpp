@@ -56,14 +56,14 @@ int TcpClient::SendMessage(const char *data, int msglen, int msgid)
     head.msglen = msglen;
 
     //1 将消息头 写到Obuf中
-    int ret = obuf.send_data((const char*)&head, MESSAGE_HEAD_LEN);
+    int ret = obuf.sendData((const char*)&head, MESSAGE_HEAD_LEN);
     if (ret != 0) {
         fprintf(stderr, "send head error\n");
         return -1;
     }
 
     // 2 写消息体
-    ret = obuf.send_data(data, msglen);
+    ret = obuf.sendData(data, msglen);
     if (ret != 0) {
         fprintf(stderr, "send data error\n");
         //如果消息体写失败，消息头需要弹出重置

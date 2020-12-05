@@ -30,21 +30,21 @@ void * TcpServer::conn_start_cb_args = NULL;
 void * TcpServer::conn_close_cb_args = NULL;
 
 
-void TcpServer::increase_conn(int connfd, TcpConn *conn) //新增一个链接 12 , 17 , 26
+void TcpServer::increaseConn(int connfd, TcpConn *conn) //新增一个链接 12 , 17 , 26
 {
     pthread_mutex_lock(&_conns_mutex);
     conns[connfd] = conn;
     _curr_conns++;
     pthread_mutex_unlock(&_conns_mutex);
 }
-void TcpServer::decrease_conn(int connfd) //减少一个链接  
+void TcpServer::decreaseConn(int connfd) //减少一个链接  
 {
     pthread_mutex_lock(&_conns_mutex);
     conns[connfd]  = NULL;
     _curr_conns--;
     pthread_mutex_unlock(&_conns_mutex);
 }
-void TcpServer::get_conn_num(int *curr_conn) //得到当前的连接刻度
+void TcpServer::getConnNumber(int *curr_conn) //得到当前的连接刻度
 {
     pthread_mutex_lock(&_conns_mutex);
     *curr_conn = _curr_conns;
@@ -196,7 +196,7 @@ void TcpServer::doAccept()
             //accept succ!
             //判断连接个数是否已经超过最大值 _max_conns;
             int cur_conns;
-            get_conn_num(&cur_conns); //获取当前在线的连接个数
+            getConnNumber(&cur_conns); //获取当前在线的连接个数
             if (cur_conns >= _max_conns) {
                 fprintf(stderr, "so many connections, max = %d\n", _max_conns);
                 close(connfd);
@@ -206,7 +206,7 @@ void TcpServer::doAccept()
                     //开启了多线程模式
                     //将这个connfd交给一个线程来去创建并且去监听
                     //1 从线程池中获取一个ThreadQueue
-                    ThreadQueue<TaskMsg> *queue = _ThreadPool->get_thread();
+                    ThreadQueue<TaskMsg> *queue = _ThreadPool->getThread();
                     //创建一个任务
                     TaskMsg task;
                     task.type = TaskMsg::NEW_CONN;

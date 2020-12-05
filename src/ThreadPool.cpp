@@ -2,7 +2,7 @@
 
 
 //提供一个获取一个ThreadQueue方法
-ThreadQueue<TaskMsg> * ThreadPool::get_thread()
+ThreadQueue<TaskMsg> * ThreadPool::getThread()
 {
     if (_index == _thread_cnt)     {
         _index = 0;
@@ -18,7 +18,7 @@ ThreadQueue<TaskMsg> * ThreadPool::get_thread()
 /*
  * 一旦有task任务消息过来， 这个业务函数就会被loop监听到并执行,读出消息队列里的消息并进行处理
  * */
-void deal_task(EventLoop *loop, int fd, void *args)
+void dealTask(EventLoop *loop, int fd, void *args)
 {
     //1 从ThreadQueue中去取数据
     ThreadQueue<TaskMsg>* queue = (ThreadQueue<TaskMsg>*)args;
@@ -59,7 +59,7 @@ void deal_task(EventLoop *loop, int fd, void *args)
 
 
 //线程的主业务函数
-void *thread_main(void *args)
+void *ThreadMain(void *args)
 {
     ThreadQueue<TaskMsg> *queue = (ThreadQueue<TaskMsg>*)args;
 
@@ -70,7 +70,7 @@ void *thread_main(void *args)
     }
 
     queue->setLoopEvent(loop);
-    queue->setCallback(deal_task, queue);
+    queue->setCallback(dealTask, queue);
 
     //启动loop监听
     loop->EventProcess();
@@ -102,7 +102,7 @@ ThreadPool::ThreadPool(int thread_cnt)
         _queues[i] = new ThreadQueue<TaskMsg>();
 
         //第i个线程 绑定第i个thraed_queue
-        ret = pthread_create(&_tids[i], NULL, thread_main, _queues[i]);
+        ret = pthread_create(&_tids[i], NULL, ThreadMain, _queues[i]);
         if (ret == -1){
             perror("ThreadPool create error");
             exit(1);

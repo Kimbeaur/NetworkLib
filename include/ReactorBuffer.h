@@ -39,7 +39,7 @@ public:
 class OutputBuf: public ReactorBuf{
 public:
     //将一段数据 写到 自身的_buf中
-    int send_data(const char *data, int datalen);
+    int sendData(const char *data, int datalen);
     
     //将_buf中的数据写到一个fd中
     int write2fd(int fd); //取代 io层 write方法
