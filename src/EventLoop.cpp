@@ -21,13 +21,6 @@ void EventLoop::EventProcess()
     IOEvent_map_it ev_it;
     while (true) {
 
-#if 0
-        printf("wait IN OUT event...\n");
-        for (listen_fd_set::iterator it = listen_fds.begin(); it != listen_fds.end(); it++) {
-            printf("fd %d is listenning by EventLoop...\n", *it);
-        }
-#endif
-
         int nfds = epoll_wait(_epfd, _fired_evs, MAXEVENTS, -1);
         for (int i = 0; i < nfds; i ++) {
             //通过epoll触发的fd 从map中找到对应的IOEvent
