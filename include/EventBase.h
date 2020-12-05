@@ -18,8 +18,8 @@ typedef void IOCallback(EventLoop *loop, int fd, void *args);
 struct IOEvent {
     IOEvent() {
         mask = 0;
-        write_callback = NULL;
-        read_callback = NULL;
+        writeCallback = NULL;
+        readCallback = NULL;
         rcb_args = NULL;
         wcb_args = NULL;
     }
@@ -28,10 +28,10 @@ struct IOEvent {
     int mask; //EPOLLIN, EPOLLOUT 
 
     //读事件触发所绑定的回调函数
-    IOCallback *read_callback;  
+    IOCallback *readCallback;  
 
     //写事件触发所绑定的回调函数
-    IOCallback *write_callback;
+    IOCallback *writeCallback;
     
     //读事件回调函数的形参
     void *rcb_args;

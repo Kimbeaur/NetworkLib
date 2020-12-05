@@ -40,25 +40,25 @@ void EventLoop::EventProcess()
                 //读事件， 调用读回调函数
                 void *args = ev->rcb_args;
                 //调用读业务
-                ev->read_callback(this, _fired_evs[i].data.fd, args);
+                ev->readCallback(this, _fired_evs[i].data.fd, args);
             }
             else if (_fired_evs[i].events & EPOLLOUT) {
                 //写事件, 调用写回调函数
                 void *args = ev->wcb_args;
-                ev->write_callback(this, _fired_evs[i].data.fd, args);
+                ev->writeCallback(this, _fired_evs[i].data.fd, args);
             }
             else if (_fired_evs[i].events & (EPOLLHUP|EPOLLERR)) {
                 //水平触发未处理， 可能会出现HUP事件，需要正常处理读写， 如果当前时间events 既没有写，也没有读 将events从epoll中删除
-                if (ev->read_callback != NULL) {
+                if (ev->readCallback != NULL) {
                     //读事件， 调用读回调函数
                     void *args = ev->rcb_args;
                     //调用读业务
-                    ev->read_callback(this, _fired_evs[i].data.fd, args);
+                    ev->readCallback(this, _fired_evs[i].data.fd, args);
                 }
-                else if (ev->write_callback != NULL) {
+                else if (ev->writeCallback != NULL) {
                     //写事件, 调用写回调函数
                     void *args = ev->wcb_args;
-                    ev->write_callback(this, _fired_evs[i].data.fd, args);
+                    ev->writeCallback(this, _fired_evs[i].data.fd, args);
                 }
                 else  {
                     //删除
@@ -96,12 +96,12 @@ void EventLoop::AddIoEvent(int fd, IOCallback *proc, int mask, void *args)
     //2 将fd 和 IOCallback绑定 map中
     if (mask & EPOLLIN) {
         //该事件是一个读事件
-        _io_evs[fd].read_callback = proc; //注册读回调业务
+        _io_evs[fd].readCallback = proc; //注册读回调业务
         _io_evs[fd].rcb_args = args;
     }
     else if (mask & EPOLLOUT) {
         //该事件是一个写事件
-        _io_evs[fd].write_callback = proc; //注册写回调业务
+        _io_evs[fd].writeCallback = proc; //注册写回调业务
         _io_evs[fd].wcb_args = args;
     }
 

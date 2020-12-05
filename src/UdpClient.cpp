@@ -2,7 +2,7 @@
 
 
 //客户端处理客户端的读事件
-void client_read_callback(EventLoop *loop, int fd, void *args)
+void client_readCallback(EventLoop *loop, int fd, void *args)
 {
     UdpClient *client = (UdpClient*)args;
 
@@ -36,7 +36,7 @@ UdpClient::UdpClient(EventLoop *loop, const char *ip, uint16_t port)
 
     //3 添加一个读事件回调
     this->_loop = loop;
-    _loop->AddIoEvent(_sockfd, client_read_callback, EPOLLIN, this);
+    _loop->AddIoEvent(_sockfd, client_readCallback, EPOLLIN, this);
 }
 
 UdpClient::~UdpClient()

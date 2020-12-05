@@ -7,13 +7,13 @@
 
 
 
-void read_callback(EventLoop *loop, int fd, void *args)
+void readCallback(EventLoop *loop, int fd, void *args)
 {
     TcpClient *cli = (TcpClient*)args;
     cli->doRead();
 }
 
-void write_callback(EventLoop *loop, int fd, void *args)
+void writeCallback(EventLoop *loop, int fd, void *args)
 {
     TcpClient *cli = (TcpClient*)args;
     cli->doWrite();
@@ -72,7 +72,7 @@ int TcpClient::SendMessage(const char *data, int msglen, int msgid)
     }
 
     if (active_epollout == true) {
-        _loop->AddIoEvent(_sockfd, write_callback, EPOLLOUT, this);
+        _loop->AddIoEvent(_sockfd, writeCallback, EPOLLOUT, this);
     }
 
     return 0;
@@ -202,11 +202,11 @@ void connection_succ(EventLoop *loop, int fd, void *args)
         }
 
         //添加针对当前cli fd的 读回调
-        loop->AddIoEvent(fd, read_callback, EPOLLIN, cli);
+        loop->AddIoEvent(fd, readCallback, EPOLLIN, cli);
          
         if (cli->obuf.length() != 0) {
             //让EventLoop触发写回调业务
-            loop->AddIoEvent(fd, write_callback, EPOLLOUT, cli);
+            loop->AddIoEvent(fd, writeCallback, EPOLLOUT, cli);
         }
     }
     else {

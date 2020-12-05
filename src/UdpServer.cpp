@@ -1,7 +1,7 @@
 #include "UdpServer.h"
 
 //服务端处理客户端的读事件
-void server_read_callback(EventLoop *loop, int fd, void *args)
+void server_readCallback(EventLoop *loop, int fd, void *args)
 {
     UdpServer *server = (UdpServer*)args;
 
@@ -55,7 +55,7 @@ UdpServer::UdpServer(EventLoop *loop, const char *ip, uint16_t port)
 
 
     //监控_sockfd 读事件，如果可读，代表客户端有数据过来
-    _loop->AddIoEvent(_sockfd, server_read_callback, EPOLLIN, this);
+    _loop->AddIoEvent(_sockfd, server_readCallback, EPOLLIN, this);
 
     printf("udp server is running ip = %s, port = %d\n", ip, port);
 }
