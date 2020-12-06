@@ -9,8 +9,8 @@
 #define MAXEVENTS 10
 
 //map:  key:fd ---> value:IOEvent
-typedef __gnu_cxx::hash_map<int, IOEvent> IOEvent_map;
-typedef __gnu_cxx::hash_map<int, IOEvent>::iterator IOEvent_map_it;
+typedef __gnu_cxx::hash_map<int, IOEvent> IOEventMap;
+typedef __gnu_cxx::hash_map<int, IOEvent>::iterator IOEventMapIter;
 
 //set: value: fd 全部正在监听的fd集合
 typedef __gnu_cxx::hash_set<int> listen_fd_set;
@@ -52,7 +52,7 @@ private:
     int _epfd;//通过epoll_create来创建的
     
     //当前EventLoop 监控的fd和对应事件的关系
-    IOEvent_map _io_evs; 
+    IOEventMap _io_evs; 
 
     //当前EventLoop 都有哪些fd正在监听 epoll_wait()正在等待哪些fd触发状态
     //作用是将当前的服务器可以主动发送消息给客户端

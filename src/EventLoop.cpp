@@ -18,7 +18,7 @@ EventLoop::EventLoop()
 //阻塞循环监听事件，并且处理 epoll_wait, 包含调用对应的触发回调函数
 void EventLoop::EventProcess()
 {
-    IOEvent_map_it ev_it;
+    IOEventMapIter ev_it;
     while (true) {
 
         int nfds = epoll_wait(_epfd, _fired_evs, MAXEVENTS, -1);
@@ -74,7 +74,7 @@ void EventLoop::AddIoEvent(int fd, IOCallback *proc, int mask, void *args)
     int op;
 
     //1 找到当前的fd是否已经是已有事件
-    IOEvent_map_it it = _io_evs.find(fd);
+    IOEventMapIter it = _io_evs.find(fd);
     if (it == _io_evs.end()) {
         // 如果没有事件， ADD方式添加到epoll中
         op = EPOLL_CTL_ADD;    
@@ -117,7 +117,7 @@ void EventLoop::AddIoEvent(int fd, IOCallback *proc, int mask, void *args)
 //删除一个io事件 从EventLoop中
 void EventLoop::DeleteIoEvent(int fd)
 {
-    IOEvent_map_it it = _io_evs.find(fd);
+    IOEventMapIter it = _io_evs.find(fd);
     if (it == _io_evs.end()) {
         return;
     }
@@ -135,7 +135,7 @@ void EventLoop::DeleteIoEvent(int fd)
 //删除一个io事件的某个触发条件(EPOLLIN/EPOLLOUT)
 void EventLoop::DeleteIoEvent(int fd, int mask)
 {
-    IOEvent_map_it it = _io_evs.find(fd);
+    IOEventMapIter it = _io_evs.find(fd);
     if (it == _io_evs.end()) {
         return;
     }
