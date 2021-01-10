@@ -1,6 +1,5 @@
-
-#include <stdint.h>
 #pragma once
+#include <stdint.h>
 #include <vector>
 #include <ext/hash_map>
 #include "EventBase.h"
