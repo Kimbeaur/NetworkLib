@@ -8,6 +8,7 @@ OBJS = $(addsuffix .o, $(basename $(wildcard *.cc)))
 all:
 	        $(CXX) -o server $(CFLAGS)  server.cpp $(INC) $(LIB)
 	        $(CXX) -o client $(CFLAGS)  client.cpp $(INC) $(LIB)
+			$(CXX) -o timerServer $(CFLAGS)  timerServer.cpp $(INC) $(LIB)
 
 clean:
-	        -rm -f *.o server client
+	        -rm -f *.o server client timerServer

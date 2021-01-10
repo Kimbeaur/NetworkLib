@@ -1,7 +1,17 @@
 #include "EventLoop.h"
 
 
+void TimerQueueCallback(EventLoop *loop, int fd, void *args)
+{
+    std::vector<TimerEvent> fired_evs;
 
+    loop->timerQueue_->GetTimerOut(fired_evs);
+    for (std::vector<TimerEvent>::iterator it = fired_evs.begin();
+        it != fired_evs.end(); ++it)
+    {
+        it->tmCallback_(loop, it->cbData_);
+    }
+}
 //构造 用于创建epoll
 EventLoop::EventLoop()
 {
@@ -11,7 +21,15 @@ EventLoop::EventLoop()
         fprintf(stderr, "epoll create error\n");
         exit(1);
     }
-
+    //初始化定时器队列
+    timerQueue_ = new TimerQueue();
+     if (timerQueue_ == nullptr) {
+        fprintf(stderr, "when new TimerQueue\n");
+        exit(1);
+    }
+    //注册定时器事件加入到EventLoop
+    AddIoEvent(timerQueue_->GetTimerfd(), TimerQueueCallback, EPOLLIN, timerQueue_);
+    //初始化清零
     _ready_tasks.clear();
 }
 
@@ -187,3 +205,33 @@ void EventLoop::ExecuteReadyTasks()
     _ready_tasks.clear(); 
 }
 
+int EventLoop::RunAt(TimerCallback cb, void* args, uint64_t ts)
+{
+    TimerEvent te(cb, args, ts);
+    return timerQueue_->AddTimer(te);
+}
+
+int EventLoop::RunAfter(TimerCallback cb, void* args, int sec, int millis)
+{
+    struct timespec tpc;
+    clock_gettime(CLOCK_REALTIME, &tpc);
+    uint64_t ts = tpc.tv_sec * 1000 + tpc.tv_nsec / 1000000UL;
+    ts += sec * 1000 + millis;
+    TimerEvent te(cb, args, ts);
+    return timerQueue_->AddTimer(te);
+}
+
+int EventLoop::RunEvery(TimerCallback cb, void* args, int sec, int millis)
+{
+    uint32_t interval = sec * 1000 + millis;
+    struct timespec tpc;
+    clock_gettime(CLOCK_REALTIME, &tpc);
+    uint64_t ts = tpc.tv_sec * 1000 + tpc.tv_nsec / 1000000UL + interval;
+    TimerEvent te(cb, args, ts, interval);
+    return timerQueue_->AddTimer(te);
+}
+
+void EventLoop::DelTimer(int timerId)
+{
+    timerQueue_->DelTimer(timerId);
+}

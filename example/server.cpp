@@ -1,7 +1,7 @@
-#include "TcpServer.h" 
-#include "string.h"
-#include "ConfigFile.h"
 
+#include <string.h>
+#include "ConfigFile.h"
+#include "TcpServer.h" 
 /*
 struct player
 {

@@ -5,6 +5,7 @@
 #include <sys/epoll.h>
 #include <vector>
 #include "EventBase.h"
+#include "TimerQueue.h"
 
 #define MAXEVENTS 10
 
@@ -48,6 +49,13 @@ public:
         fds = listen_fds;
     }
 
+    //定时器事件函数
+    int RunAt(TimerCallback cb, void* args, uint64_t ts);
+    int RunAfter(TimerCallback cb, void* args, int sec, int millis = 0);
+    int RunEvery(TimerCallback cb, void* args, int sec, int millis = 0);
+    void DelTimer(int timerId);
+
+
 private:
     int _epfd;//通过epoll_create来创建的
     
@@ -67,4 +75,11 @@ private:
 
     //目前已经就绪的全部的task任务
     std::vector<task_func_pair> _ready_tasks;
+
+    //定时器对列
+    TimerQueue *timerQueue_;
+
+    //定时器队列回调函数
+    friend void TimerQueueCallback(EventLoop* loop, int fd, void *args);
+
 };
