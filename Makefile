@@ -1,4 +1,4 @@
-TARGET=lib/libreactor.a
+TARGET=lib/libnetwork.a
 CXX=g++
 CFLAGS= -g -O2 -Wall -fPIC  -Wno-deprecated
 

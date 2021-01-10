@@ -2,7 +2,7 @@ CXX=g++
 CFLAGS=-g -O2 -Wall -fPIC -Wno-deprecated 
 
 INC=-I../include
-LIB=-L../lib -lreactor -lpthread
+LIB=-L../lib -lnetwork -lpthread
 OBJS = $(addsuffix .o, $(basename $(wildcard *.cc)))
 
 all:
