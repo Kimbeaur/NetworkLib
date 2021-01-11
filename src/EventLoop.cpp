@@ -1,3 +1,5 @@
+
+#include <unistd.h>
 #include "EventLoop.h"
 
 
@@ -40,6 +42,19 @@ void EventLoop::EventProcess()
     while (true) {
 
         int nfds = epoll_wait(_epfd, _fired_evs, MAXEVENTS, -1);
+
+       	if (-1 == nfds)
+		{
+			if (EINTR == errno)
+			{
+				continue;
+			}
+			else
+			{
+				break;
+			}
+		}
+
         for (int i = 0; i < nfds; i ++) {
             //通过epoll触发的fd 从map中找到对应的IOEvent
             ev_it = _io_evs.find(_fired_evs[i].data.fd);
