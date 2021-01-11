@@ -43,16 +43,13 @@ void EventLoop::EventProcess()
 
         int nfds = epoll_wait(_epfd, _fired_evs, MAXEVENTS, -1);
 
+        //EINTR处理
        	if (-1 == nfds)
 		{
-			if (EINTR == errno)
-			{
+		    if (EINTR == errno)
 				continue;
-			}
 			else
-			{
 				break;
-			}
 		}
 
         for (int i = 0; i < nfds; i ++) {
