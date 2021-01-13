@@ -7,6 +7,7 @@
 
 TimerQueue::TimerQueue(): count_(0), nextTimerId_(0), pioneer_(-1/*= uint32_t max*/)
 {
+    //创建定时器fd
     timerFd_ = ::timerfd_create(CLOCK_REALTIME, TFD_NONBLOCK | TFD_CLOEXEC);
     if(timerFd_ == -1)
     {
@@ -20,6 +21,7 @@ TimerQueue::~TimerQueue()
     ::close(timerFd_);
 }
 
+//添加定时器
 int TimerQueue::AddTimer(TimerEvent& te)
 {
     te.timerId_ = nextTimerId_++;
@@ -33,6 +35,7 @@ int TimerQueue::AddTimer(TimerEvent& te)
     return te.timerId_;
 }
 
+//删除定时器
 void TimerQueue::DelTimer(int timerId)
 {
     mapIter it = position_.find(timerId);
@@ -55,7 +58,7 @@ void TimerQueue::DelTimer(int timerId)
         ResetTimerOut();
     }
 }
-
+//获取所以定时器事件
 void TimerQueue::GetTimerOut(std::vector<TimerEvent>& firedEvs)
 {
     std::vector<TimerEvent> reuselist;
@@ -74,19 +77,20 @@ void TimerQueue::GetTimerOut(std::vector<TimerEvent>& firedEvs)
     {
         AddTimer(*it);
     }
-    //reset timeout
+    //停止定时器
     if (count_ == 0)
     {
         pioneer_ = -1;
         ResetTimerOut();
     }
-    else//pioneer_ != eventList_[0].ts
+    else//当pioneer_ != eventList_[0].ts，更新定时器事件
     {
         pioneer_ = eventList_[0].ts_;
         ResetTimerOut();
     }
 }
 
+//重置timerFd_的定时器
 void TimerQueue::ResetTimerOut()
 {
     struct itimerspec old_ts, new_ts;
@@ -94,13 +98,15 @@ void TimerQueue::ResetTimerOut()
 
     if (pioneer_ != (uint64_t)(-1))
     {
+        //定时器器更新定时器事件，并添加到timerFd_中
         new_ts.it_value.tv_sec = pioneer_ / 1000;
         new_ts.it_value.tv_nsec = (pioneer_ % 1000) * 1000000;
     }
-    //when pioneer_ = -1, new_ts = 0 will disarms the timer
+    //当pioneer_ = -1, new_ts = 0 将停止定时器
     ::timerfd_settime(timerFd_, TFD_TIMER_ABSTIME, &new_ts, &old_ts);
 }
 
+//添加定时器事件
 void TimerQueue::HeapAdd(TimerEvent& te)
 {
     eventList_.push_back(te);
@@ -116,7 +122,7 @@ void TimerQueue::HeapAdd(TimerEvent& te)
         TimerEvent tmp = eventList_[curr_pos];
         eventList_[curr_pos] = eventList_[prt_pos];
         eventList_[prt_pos] = tmp;
-        //update position
+        //更新位置
         position_[eventList_[curr_pos].timerId_] = curr_pos;
         position_[tmp.timerId_] = prt_pos;
 
@@ -124,7 +130,7 @@ void TimerQueue::HeapAdd(TimerEvent& te)
         prt_pos = (curr_pos - 1) / 2;
     }
 }
-
+//删除堆
 void TimerQueue::HeapDel(int pos)
 {
     TimerEvent to_del = eventList_[pos];
@@ -142,7 +148,7 @@ void TimerQueue::HeapDel(int pos)
 
     HeapHold(pos);
 }
-
+//获取堆顶元素
 void TimerQueue::HeapPop()
 {
     if (count_ <= 0) return ;
@@ -166,6 +172,7 @@ void TimerQueue::HeapPop()
     }
 }
 
+//调整堆结构
 void TimerQueue::HeapHold(int pos)
 {
     int left = 2 * pos + 1, right = 2 * pos + 2;
@@ -183,7 +190,7 @@ void TimerQueue::HeapHold(int pos)
         TimerEvent tmp = eventList_[min_pos];
         eventList_[min_pos] = eventList_[pos];
         eventList_[pos] = tmp;
-        //update position
+        //更新位置
         position_[eventList_[min_pos].timerId_] = min_pos;
         position_[tmp.timerId_] = pos;
 
