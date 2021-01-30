@@ -1,3 +1,9 @@
+/**************************************************
+ * @Description 
+ * @Author kimbeaur
+ * @Date 2021/1/30 09:42
+ *************************************************/
+
 #pragma once
 #include <queue>
 #include <pthread.h>

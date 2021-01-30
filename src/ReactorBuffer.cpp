@@ -1,3 +1,10 @@
+
+/**************************************************
+ * @Description 
+ * @Author kimbeaur
+ * @Date 2021/1/30 09:42
+ *************************************************/
+
 #include "ReactorBuffer.h"
 #include <assert.h>
 #include <sys/ioctl.h>
